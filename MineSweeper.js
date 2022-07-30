@@ -1,7 +1,7 @@
 const prompt = require('prompt-sync')();
 
 class Square{
-    constructor(location, state){
+    constructor(location){
         this.location = location;
         this.contents = ' ';
         this.state = false;
@@ -173,18 +173,15 @@ function howManyMines(){
     }
 }
 
-function printGrid(){
+function printGrid(feature){
     let row = [];
     for(let i=0; i<grid.length; i++){
         let s = grid[i];
-        let content = s.contents;
-        //let isOpen = s.state;
-        row.push(content);
-        //if(isOpen == false){
-           // row.push('X');
-        //}else if(isOpen == true){
-            //row.push(content);
-        //}
+        if(grid[i].state == true){
+            row.push(grid[i].contents);
+        } else{
+            row.push('X');
+        }
         if((i+1)%8 == 0){
             let printThis = row.join(', ');
             console.log(printThis);
@@ -199,3 +196,73 @@ fillGrid();
 layMines();
 howManyMines();
 printGrid();
+startGame();
+
+function startGame(){
+    let i = 0;
+    let row = prompt(console.log('Hello, choose the row.' ));
+    let column = prompt(console.log('Choose the column. '));
+    if(row == 1){
+        i = column-row;
+    }else{
+        i = (row-1)*8 + (column-1);
+    }
+    let s = grid[i];
+    if(s.contents == '#'){
+        console.log('Oh No! You stepped on a mine. \nWould you like to play again? Y/N: ');
+    }else{
+        s.state = true;
+        openSquare(row, column);
+    }
+
+}
+
+function openSquare(row, column){
+    let i = 0;
+    if(row == 1){
+        i = column-row;
+    }else{
+        i = (row-1)*8 + (column-1);
+    }
+    let nextI = i;
+    while(i<56 && grid[nextI].contents != '#'){
+        nextI += 8;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i>7 && grid[nextI].contents != '#'){
+        nextI -= 8;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i%8!=0 && grid[nextI].contents != '#'){
+        nextI -=1;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(((i+1)%8)!=0 && grid[nextI].contents != '#'){
+        nextI += 1;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i>7 && ((i+1)%8)!=0 && grid[nextI].contents != '#'){
+        nextI -= 7;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i>7 && i%8!=0 && grid[nextI].contents != '#'){
+        nextI -= 9;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i<56 && i%8!=0 && grid[nextI].contents != '#'){
+        nextI += 7;
+        grid[nextI].state = true;
+    }
+    nextI = i;
+    while(i<56 && (i+1)%8!=0 && grid[nextI].contents != '#'){
+        nextI += 9;
+        grid[nextI].state = true;
+    }
+    printGrid();
+}
