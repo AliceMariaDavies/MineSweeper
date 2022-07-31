@@ -1,5 +1,7 @@
 const prompt = require('prompt-sync')();
 
+const grid = new Array(64);
+
 class Square{
     constructor(location){
         this.location = location;
@@ -20,11 +22,6 @@ class Square{
     }
 
 }
-
-//const s = new Square(0, 'closed');
-//console.log(s);
-
-const grid = new Array(64);
 
 function fillGrid(){
     for(let i=0; i<grid.length; i++){
@@ -190,14 +187,6 @@ function printGrid(feature){
     }
 }
 
-
-
-fillGrid();
-layMines();
-howManyMines();
-printGrid();
-startGame();
-
 function startGame(){
     let i = 0;
     let row = prompt(console.log('Hello, choose the row.' ));
@@ -225,44 +214,71 @@ function openSquare(row, column){
         i = (row-1)*8 + (column-1);
     }
     let nextI = i;
-    while(i<56 && grid[nextI].contents != '#'){
+    while(nextI<56 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI += 8;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i>7 && grid[nextI].contents != '#'){
+    while(nextI>7 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI -= 8;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i%8!=0 && grid[nextI].contents != '#'){
+    while(nextI%8!=0 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI -=1;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(((i+1)%8)!=0 && grid[nextI].contents != '#'){
+    while(((nextI+1)%8)!=0 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI += 1;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i>7 && ((i+1)%8)!=0 && grid[nextI].contents != '#'){
+    while(nextI>7 && (i+1)%8!=0 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI -= 7;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i>7 && i%8!=0 && grid[nextI].contents != '#'){
+    while(nextI>7 && i%8!=0 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI -= 9;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i<56 && i%8!=0 && grid[nextI].contents != '#'){
+    while(nextI<56 && i%8!=0 && grid[nextI].contents != '#'){
+        grid[nextI].state = true;
         nextI += 7;
-        grid[nextI].state = true;
     }
     nextI = i;
-    while(i<56 && (i+1)%8!=0 && grid[nextI].contents != '#'){
-        nextI += 9;
+    while(nextI<56 && (i+1)%8!=0 && grid[nextI].contents != '#'){
         grid[nextI].state = true;
+        nextI += 9;
     }
     printGrid();
 }
+
+function plantFlag(){
+    let row = console.log('Choose row to plant flag. ');
+    let column = console.log('Choose column to plant flag. ');
+    let i = 0;
+    if(row == 1){
+        i = column-row;
+    }else{
+        i = (row-1)*8 + (column-1);
+    }
+    if(grid[i].state == true){
+        console.log('This cell is open, choose another. ');
+        plantFlag();
+    }
+    if(grid[i].contents == '#'){
+        console.log('Oh No! You stepped on a mine.');
+    }else{
+        grid[i].contents = '>';
+        printGrid();
+    }
+}
+
+fillGrid();
+layMines();
+howManyMines();
+printGrid();
+startGame();
